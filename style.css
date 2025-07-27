@@ -1,0 +1,214 @@
+/* ฟอนต์และพื้นฐาน */
+body {
+  font-family: 'Sarabun', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #dbeafe, #f0f9ff);
+  color: #333;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+/* หัวข้อ */
+header {
+  margin-bottom: 20px;
+}
+
+.header-small {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 28px;
+  color: #0f172a;
+  margin: 0;
+}
+
+h2 {
+  font-size: 22px;
+  color: #0f172a;
+  margin: 0;
+}
+
+h4 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  color: #1e293b;
+}
+
+/* ไอคอน */
+.icon {
+  width: 80px;
+  margin-bottom: 10px;
+}
+
+.back-btn {
+  text-decoration: none;
+  font-size: 22px;
+  color: #2563eb;
+  font-weight: bold;
+}
+
+/* ปุ่ม */
+.btn {
+  display: inline-block;
+  background-color: #2563eb;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-size: 16px;
+  text-decoration: none;
+  transition: 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #1e40af;
+}
+
+.btn.small {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.btn.grey {
+  background-color: #94a3b8;
+}
+
+.btn.grey:hover {
+  background-color: #64748b;
+}
+
+/* หน้าต้อนรับ home.html */
+.welcome-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.intro-section {
+  font-size: 17px;
+  line-height: 1.8;
+  background-color: #f1f5f9;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 30px;
+}
+
+.guide-list {
+  text-align: left;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+
+.guide-list li {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+/* ฟอร์มสร้างโจทย์ */
+.form-section input,
+select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.dropdowns label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.output-box {
+  margin-top: 20px;
+  background-color: #f0f9ff;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 16px;
+}
+
+/* หน้าผลลัพธ์ result.html */
+.result-section {
+  text-align: center;
+}
+
+.question-box {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 15px 0;
+  font-size: 18px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.answers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.answer {
+  padding: 15px;
+  border: none;
+  background-color: #e0f2fe;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.answer:hover {
+  background-color: #bae6fd;
+}
+
+.answer.selected {
+  background-color: #2563eb;
+  color: white;
+}
+
+.result-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* หน้าประวัติ history.html */
+.history-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.history-item {
+  background-color: #f8fafc;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.history-item p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #475569;
+}
