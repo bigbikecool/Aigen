@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>สร้างโจทย์ | คณิต ฟิสิกส์ เคมี</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    header.header-small {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    header.header-small .back-btn {
+      text-decoration: none;
+      font-size: 1.6em;
+      color: #444;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    header.header-small .back-btn:hover {
+      color: #0077ff;
+    }
+    header.header-small h2 {
+      margin: 0;
+      font-weight: 700;
+      color: #222;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #333;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 1em;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      margin-top: 5px;
+      transition: border-color 0.3s ease;
+    }
+    select:focus, input[type="text"]:focus {
+      border-color: #0077ff;
+      outline: none;
+    }
+    button.btn {
+      margin-top: 25px;
+      padding: 12px 18px;
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #fff;
+      background-color: #0077ff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button.btn:hover {
+      background-color: #005fcc;
+    }
+    #quiz-output {
+      margin-top: 30px;
+    }
+    .question-box {
+      background: #e8f0fe;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+    }
+    .question-box p {
+      font-weight: 600;
+      color: #222;
+      margin: 0 0 10px 0;
+    }
+    .question-box ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+    .question-box li {
+      margin-bottom: 8px;
+    }
+    .explanation {
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: #444;
+    }
+    .correct {
+      color: green;
+      font-weight: bold;
+    }
+    .wrong {
+      color: red;
+      font-weight: bold;
+    }
+    #score {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: 700;
+      color: #222;
+    }
+    #checkBtn, #historyBtn {
+      display: inline-block;
+      margin-top: 15px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header-small">
+      <a href="index.html" class="back-btn" title="กลับหน้าแรก">←</a>
+      <h2>สร้างโจทย์จาก AI</h2>
+    </header>
+
+    <div class="form-section">
+      <label for="subject">เลือกวิชา:</label>
+      <select id="subject" onchange="updateTopicOptions()">
+        <option value="math">คณิตศาสตร์</option>
+        <option value="physics">ฟิสิกส์</option>
+        <option value="chemistry">เคมี</option>
+      </select>
+
+      <label for="topic">หัวข้อ:</label>
+      <select id="topic">
+        <!-- ตัวเลือกหัวข้อจะถูกเพิ่มโดย JS -->
+      </select>
+
+      <label for="amount">จำนวนข้อ:</label>
+      <select id="amount">
+        <option value="5">5 ข้อ</option>
+        <option value="10" selected>10 ข้อ</option>
+        <option value="15">15 ข้อ</option>
+      </select>
+
+      <label for="difficulty">ระดับความยาก:</label>
+      <select id="difficulty">
+        <option value="easy">ง่าย</option>
+        <option value="medium" selected>ปานกลาง</option>
+        <option value="hard">ยาก</option>
+      </select>
+
+      <button class="btn" onclick="handleGenerate()">สร้างโจทย์</button>
+    </div>
+
+    <div id="quiz-output"></div>
+
+    <button class="btn" id="checkBtn" onclick="checkAnswers()" style="display:none;">ตรวจคำตอบ</button>
+    <button class="btn" id="historyBtn" onclick="goHistory()" style="display:none; background-color:#777;">ประวัติการทำโจทย์</button>
+    <div id="score"></div>
+  </div>
+
+  <script>
+    const topicsBySubject = {
+      math: [{ value: "สมการ", text: "สมการ" }],
+      physics: [{ value: "คลื่น", text: "คลื่น" }],
+      chemistry: [{ value: "สมการเคมี", text: "สมการเคมี" }]
+    };
+
+    let quizData = [];
+
+    function updateTopicOptions() {
+      const subject = document.getElementById("subject").value;
+      const topicSelect = document.getElementById("topic");
+      topicSelect.innerHTML = "";
+
+      topicsBySubject[subject].forEach(topic => {
+        const option = document.createElement("option");
+        option.value = topic.value;
+        option.textContent = topic.text;
+        topicSelect.appendChild(option);
+      });
+    }
+
+    // เรียกเพื่อเติมค่าเริ่มต้นตอนโหลดหน้า
+    updateTopicOptions();
+
+    // ฟังก์ชันสร้างโจทย์สมการคณิต
+    function generateEquation() {
+      const a = getRandomInt(1, 10);
+      const x = getRandomInt(1, 10);
+      const b = getRandomInt(0, 10);
+      const c = a * x + b;
+      const question = `${a}x + ${b} = ${c}`;
+      const correctAnswer = x;
+      const explanation = `แก้สมการ: ${a}x + ${b} = ${c} → ${a}x = ${c - b} → x = ${(c - b) / a}`;
+
+      let choices = [correctAnswer];
+      while (choices.length < 4) {
+        const fake = getRandomInt(correctAnswer - 5, correctAnswer + 5);
+        if (!choices.includes(fake)) choices.push(fake);
+      }
+
+      choices = choices.sort(() => Math.random() - 0.5);
+
+      return { question, choices, answer: correctAnswer, explanation };
+    }
+
+    // ฟังก์ชันสร้างโจทย์สมการเคมี (ตัวอย่างง่าย)
+    function generateChemicalEquation() {
+      // ตัวอย่างสมการเคมีง่าย ๆ (ให้เลือกผลิตภัณฑ์ถูกต้อง)
+      const reactions = [
+        {
+          question: "H₂ + O₂ → ?",
+          correctAnswer: "H₂O",
+          choices: ["H₂O₂", "H₂O", "O₂H", "OH₂"],
+          explanation: "สมการการสร้างน้ำ: 2H₂ + O₂ → 2H₂O"
+        },
+        {
+          question: "Na + Cl₂ → ?",
+          correctAnswer: "NaCl",
+          choices: ["NaCl₂", "NaCl", "Na₂Cl", "Na₂Cl₂"],
+          explanation: "สมการสร้างโซเดียมคลอไรด์: 2Na + Cl₂ → 2NaCl"
+        },
+        {
+          question: "C + O₂ → ?",
+          correctAnswer: "CO₂",
+          choices: ["CO", "CO₂", "C₂O", "O₂C"],
+          explanation: "สมการสร้างคาร์บอนไดออกไซด์: C + O₂ → CO₂"
+        },
+        {
+          question: "Fe + O₂ → ?",
+          correctAnswer: "Fe₂O₃",
+          choices: ["FeO", "Fe₂O₃", "FeO₂", "Fe₃O₄"],
+          explanation: "สมการสร้างสนิมเหล็ก: 4Fe + 3O₂ → 2Fe₂O₃"
+        }
+      ];
+
+      const chosen = reactions[getRandomInt(0, reactions.length - 1)];
+      let choices = [...chosen.choices];
+      choices = choices.sort(() => Math.random() - 0.5);
+
+      return {
+        question: chosen.question,
+        choices,
+        answer: chosen.correctAnswer,
+        explanation: chosen.explanation
+      };
+    }
+
+    // ฟังก์ชันสร้างโจทย์ฟิสิกส์เรื่องคลื่น (ง่ายๆ)
+    function generatePhysicsWave() {
+      // ตัวอย่างโจทย์เรื่องคลื่น (หาความถี่ f = v / λ)
+      const velocity = getRandomInt(10, 100); // ความเร็วคลื่น (m/s)
+      const wavelength = getRandomInt(1, 20); // ความยาวคลื่น (m)
+      const frequency = parseFloat((velocity / wavelength).toFixed(2)); // Hz
+      const question = `คลื่นที่มีความเร็ว ${velocity} m/s และความยาวคลื่น ${wavelength} เมตร ความถี่ของคลื่นนี้เป็นเท่าใด (Hz)?`;
+
+      let choices = [frequency];
+      while (choices.length < 4) {
+        let fakeFreq = parseFloat((frequency + getRandomInt(-5, 5)).toFixed(2));
+        if (fakeFreq > 0 && !choices.includes(fakeFreq)) choices.push(fakeFreq);
+      }
+      choices = choices.sort(() => Math.random() - 0.5);
+
+      const explanation = `สูตร: ความถี่ f = ความเร็วคลื่น (v) / ความยาวคลื่น (λ) → f = ${velocity} / ${wavelength} = ${frequency} Hz`;
+
+      return { question, choices, answer: frequency, explanation };
+    }
+
+    // ฟังก์ชันสุ่มเลข
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // สร้างโจทย์ตามวิชาและหัวข้อ
+    function handleGenerate() {
+      const subject = document.getElementById("subject").value;
+      const topic = document.getElementById("topic").value;
+      const amount = parseInt(document.getElementById("amount").value);
+      const difficulty = document.getElementById("difficulty").value;
+      const quizContainer = document.getElementById("quiz-output");
+      const scoreDiv = document.getElementById("score");
+      scoreDiv.innerHTML = "";
+      quizContainer.innerHTML = "";
+
+      quizData = [];
+
+      for (let i = 1; i <= amount; i++) {
+        let qObj;
+        if (subject === "math" && topic === "สมการ") {
+          qObj = generateEquation();
+        } else if (subject === "chemistry" && topic === "สมการเคมี") {
+          qObj = generateChemicalEquation();
+        } else if (subject === "physics" && topic === "คลื่น") {
+          qObj = generatePhysicsWave();
+        } else {
+          quizContainer.innerHTML = `<p style="color:red;">🔒 หัวข้อนี้ยังไม่รองรับ</p>`;
+          document.getElementById("checkBtn").style.display = "none";
+          document.getElementById("historyBtn").style.display = "none";
+          return;
+        }
+
+        quizData.push(qObj);
+
+        const questionHTML = `
+          <div class="question-box" id="q${i}">
+            <p><strong>ข้อ ${i}:</strong> ${qObj.question}</p>
+            <ul>
+              ${qObj.choices.map(choice => `
+                <li>
+                  <label>
+                    <input type="radio" name="q${i}" value="${choice}">
+                    ${choice}
+                  </label>
+                </li>
+              `).join("")}
+            </ul>
+            <div class="explanation" id="explain${i}" style="display:none;"></div>
+          </div>
+        `;
+        quizContainer.innerHTML += questionHTML;
+      }
+      document.getElementById("checkBtn").style.display = "inline-block";
+      document.getElementById("historyBtn").style.display = "inline-block";
+    }
+
+    // ตรวจคำตอบ
+    function checkAnswers() {
+      let score = 0;
+      quizData.forEach((q, index) => {
+        const qNum = index + 1;
+        const selected = document.querySelector(`input[name="q${qNum}"]:checked`);
+        const explainDiv = document.getElementById(`explain${qNum}`);
+        explainDiv.style.display = "block";
+
+        if (selected) {
+          if (selected.value == q.answer) {
+            explainDiv.innerHTML = `<span class="correct">✅ ถูกต้อง!</span> ${q.explanation}`;
+            score++;
+          } else {
+            explainDiv.innerHTML = `<span class="wrong">❌ ผิด</span> คำตอบที่ถูกคือ ${q.answer}. ${q.explanation}`;
+          }
+        } else {
+          explainDiv.innerHTML = `<span class="wrong">❌ ยังไม่ได้เลือกคำตอบ</span>`;
+        }
+      });
+
+      document.getElementById("score").innerHTML = `<h3>คะแนนรวม: ${score} / ${quizData.length}</h3>`;
+
+      saveHistory(
+        document.getElementById("subject").value,
+        document.getElementById("topic").value,
+        score,
+        quizData.length
+      );
+    }
+
+    // บันทึกประวัติลง localStorage
+    function saveHistory(subject, topic, score, total) {
+      const history = JSON.parse(localStorage.getItem("quizHistory") || "[]");
+      const now = new Date();
+      const entry = {
+        subject,
+        topic,
+        score,
+        total,
+        date: now.toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })
+      };
+      history.unshift(entry);
+      localStorage.setItem("quizHistory", JSON.stringify(history));
+    }
+
+    // ไปหน้าประวัติ
+    function goHistory() {
+      window.location.href = "history.html";
+    }
+  </script>
+</body>
+</html>
