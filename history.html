@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ประวัติคะแนน</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-family: 'Sarabun', sans-serif;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .btn-clear {
+      background: #c0392b;
+      color: white;
+      padding: 8px 12px;
+      margin-top: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header-small">
+      <a href="index.html" class="back-btn">←</a>
+      <h2>ประวัติคะแนน</h2>
+    </header>
+
+    <div id="history"></div>
+    <button class="btn-clear" onclick="clearHistory()">ล้างประวัติทั้งหมด</button>
+
+    <script>
+      function loadHistory() {
+        const history = JSON.parse(localStorage.getItem("quizHistory") || "[]");
+        const historyDiv = document.getElementById("history");
+
+        if (history.length === 0) {
+          historyDiv.innerHTML = "<p>ยังไม่มีประวัติการทำแบบทดสอบ</p>";
+          return;
+        }
+
+        let html = "<table><tr><th>วันที่</th><th>วิชา</th><th>หัวข้อ</th><th>คะแนน</th></tr>";
+        history.forEach(item => {
+          html += `<tr>
+                    <td>${item.date}</td>
+                    <td>${convertSubject(item.subject)}</td>
+                    <td>${item.topic}</td>
+                    <td>${item.score} / ${item.total}</td>
+                  </tr>`;
+        });
+        html += "</table>";
+        historyDiv.innerHTML = html;
+      }
+
+      function clearHistory() {
+        if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบประวัติทั้งหมด?")) {
+          localStorage.removeItem("quizHistory");
+          loadHistory();
+        }
+      }
+
+      function convertSubject(code) {
+        if (code === "math") return "คณิตศาสตร์";
+        if (code === "physics") return "ฟิสิกส์";
+        if (code === "chemistry") return "เคมี";
+        return code;
+      }
+
+      loadHistory();
+    </script>
+  </div>
+</body>
+</html>
